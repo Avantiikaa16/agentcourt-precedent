@@ -2,7 +2,7 @@
 
 Every risky AI action goes on trial, and every verdict becomes precedent.
 
-Built solo by **Avantika Chapegadikar** for "Memory Meets Motion" (2026-08-03, Frontier Tower SF). Mandated stack: **FalkorDB** (precedent graph) · **RocketRide** (trial orchestration + execution) · **Guild.ai** (courtroom agents) · **LaserData** (event stream). Optional evidence sponsors: **Snyk** (security witness), **Linkup** (policy witness) — not wired, honestly marked UNAVAILABLE in the UI rather than faked.
+Built solo by **Avantika Chapegadikar** for "Memory Meets Motion" (2026-08-03). Mandated stack: **FalkorDB** (precedent graph) · **RocketRide** (trial orchestration + execution) · **Guild.ai** (courtroom agents) · **LaserData** (event stream). Optional evidence sponsors: **Snyk** (security witness), **Linkup** (policy witness) — not wired, honestly marked UNAVAILABLE in the UI rather than faked.
 
 ## Quickstart (fresh clone)
 
@@ -30,7 +30,7 @@ Open `localhost:3000`, click **Run Golden Demo**. This is a live-integration dem
 
 ## Two real bugs found and fixed in vendor SDKs
 
-**RocketRide**: the ▶ play-button test session in Pipeline Builder has a default TTL and expires after inactivity. Fixed via `npm run rocketride:deploy` (in `backend/`) — reads the real saved pipeline from RocketRide's account store (`.projects/agentcourt-executor.pipe`) and restarts it with `ttl: 0` (no timeout) via SDK calls (`getTaskToken` / `terminate` / `use`). Same webhook token every time. Rerun that command if the webhook ever starts 400ing again.
+**RocketRide**: the play-button test session in Pipeline Builder has a default TTL and expires after inactivity. Fixed via `npm run rocketride:deploy` (in `backend/`) — reads the real saved pipeline from RocketRide's account store (`.projects/agentcourt-executor.pipe`) and restarts it with `ttl: 0` (no timeout) via SDK calls (`getTaskToken` / `terminate` / `use`). Same webhook token every time. Rerun that command if the webhook ever starts 400ing again.
 
 **LaserData**: `@laserdata/laser-sdk`'s TLS socket never set `servername` (SNI), so LaserData Cloud's SNI-routed load balancer silently reset the connection before the handshake completed — appeared as an indefinite hang. Diagnosed by comparing a plain `tls.connect()` (worked, got a real cert) against the SDK's internal socket creation (failed) down to the exact missing option. Patched locally in `node_modules` (`client.connection.js`), made durable via `patch-package` (`backend/patches/`, auto-applied on `npm install` through the `postinstall` hook — see `backend/package.json`). `rejectUnauthorized: false` is also set since the deployment presents a self-signed per-deployment cert; acceptable for a same-day hackathon credential.
 

@@ -74,17 +74,6 @@ export function CourtroomPanel({ courtroom }: { courtroom?: CourtroomOutput }) {
               <div className="text-xs text-zinc-600 dark:text-zinc-400 italic mt-1">{courtroom.judge.reasoningSummary}</div>
             )}
           </div>
-
-          <div className="grid grid-cols-2 gap-2">
-            <div className="rounded-lg bg-zinc-500/5 border border-zinc-500/15 p-2.5 text-xs text-zinc-500">
-              <div className="font-semibold text-zinc-600 dark:text-zinc-400">Snyk Security Witness</div>
-              <div className="mt-0.5">UNAVAILABLE — not wired this build</div>
-            </div>
-            <div className="rounded-lg bg-zinc-500/5 border border-zinc-500/15 p-2.5 text-xs text-zinc-500">
-              <div className="font-semibold text-zinc-600 dark:text-zinc-400">Linkup Policy Witness</div>
-              <div className="mt-0.5">UNAVAILABLE — not wired this build</div>
-            </div>
-          </div>
         </div>
       )}
     </Panel>

@@ -2,7 +2,7 @@
 
 Every risky AI action goes on trial, and every verdict becomes precedent.
 
-Built solo by **Avantika Chapegadikar** for "Memory Meets Motion" (2026-08-03). Mandated stack: **FalkorDB** (precedent graph) · **RocketRide** (trial orchestration + execution) · **Guild.ai** (courtroom agents) · **LaserData** (event stream). Optional evidence sponsors: **Snyk** (security witness), **Linkup** (policy witness) — not wired, honestly marked UNAVAILABLE in the UI rather than faked.
+Built solo by **Avantika Chapegadikar** for "Memory Meets Motion" (2026-08-03). Mandated stack: **FalkorDB** (precedent graph) · **RocketRide** (trial orchestration + execution) · **Guild.ai** (courtroom agents) · **LaserData** (event stream). Snyk and Linkup (optional evidence sponsors) were not wired and are omitted from the UI entirely rather than shown as empty placeholders.
 
 ## Quickstart (fresh clone)
 
@@ -72,7 +72,7 @@ guild-agents/
   judge/, prosecutor/, defense/   Real Guild.ai agent source (llmAgent + system prompts), each published via `guild agent save --publish`
 frontend/
   app/page.tsx                Dashboard: Run Golden Demo / Reset Demo + sponsor bar + 5-panel grid
-  components/                 DocketPanel, CourtroomPanel (+ witness placeholders), EvidenceGraphPanel,
+  components/                 DocketPanel, CourtroomPanel, EvidenceGraphPanel,
                                FuturesPanel, VerdictExecutionPanel (animated checklist + receipt), SponsorBar
   lib/types.ts, api.ts, statusColor.ts   Mirrors backend types by hand
 ```
@@ -83,7 +83,7 @@ frontend/
 - [x] **Guild.ai** — 3 agents published and invoked for real per trial.
 - [x] **RocketRide** — pipeline deployed and invoked for real, running persistently, fully automated.
 - [x] **LaserData** — publishing and reading real events, SDK bug patched and durable.
-- [ ] **Snyk / Linkup** (optional, not mandated) — not wired, honestly shown as UNAVAILABLE rather than faked.
+- [ ] **Snyk / Linkup** (optional, not mandated) — not wired, omitted from the UI rather than faked.
 
 ## Judging checklist (from the doc)
 
@@ -92,4 +92,4 @@ frontend/
 - [x] FalkorDB query + precedent path visible on screen (Evidence Graph panel).
 - [x] Guild session identifiers — visible via `guild session list` / app.guild.ai.
 - [x] LaserData event IDs visible on screen (sponsor bar + `/api/cases/:caseId/events`).
-- [ ] Linkup source URLs / Snyk finding — not applicable, not wired, clearly labeled UNAVAILABLE rather than hidden or faked.
+- [ ] Linkup source URLs / Snyk finding — not applicable, not wired, omitted from the UI rather than faked.

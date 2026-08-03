@@ -64,8 +64,6 @@ export function SponsorBar({ caseRecord }: { caseRecord?: CaseRecord }) {
         label="RocketRide"
         detail={caseRecord?.executionReceipt?.rocketride ? caseRecord.executionReceipt.rocketride.objectId.slice(0, 8) : "not executed"}
       />
-      <Chip status="unavailable" label="Linkup" detail="not wired" />
-      <Chip status="unavailable" label="Snyk" detail="not wired" />
     </div>
   );
 }

@@ -1,6 +1,6 @@
 # AgentCourt Precedent
 
-![AgentCourt Precedent dashboard](docs/screenshot.png)
+![AgentCourt Precedent dashboard](docs/screenshot-plain-dashboard.png)
 
 Every risky AI action goes on trial, and every verdict becomes precedent.
 
@@ -45,6 +45,28 @@ Open `localhost:3000`, click **Run Golden Demo**. This is a live-integration dem
 5. Click **Approve Safer Action**. RocketRide executes the sandboxed soft-delete (real webhook call, real `objectId`). FalkorDB records the outcome as a new precedent. An animated checklist confirms each step; the receipt shows case ID, action hash, approver, and the RocketRide run ID.
 6. **Replay**: click "Try Similar Action Again." The system immediately cites the just-completed case alongside the original, and the Judge's own reasoning names both. *That's the proof memory changed motion.*
 7. **Reset Demo** clears the dashboard view (not the underlying data) for a clean rerun between pitches.
+
+## Screenshots
+
+**1. Plain dashboard** — fresh load, sponsor bar visible, no trial run yet.
+
+![Plain dashboard](docs/screenshot-plain-dashboard.png)
+
+**2. Running** — a trial in flight: LaserData captures the proposed action, FalkorDB is queried for precedent, and the Guild.ai courtroom (Prosecutor → Defense → Judge) runs live.
+
+![Running](docs/screenshot-running.png)
+
+**3. First demo, approved** — the golden demo's first run. Judge lands on MODIFY citing the seed precedent, Bailiff requires backup/dry-run/human approval, and after clicking Approve, RocketRide executes for real — full receipt with case ID, action hash, and RocketRide run ID.
+
+![First demo with approval](docs/screenshot-first-demo-with-approval.png)
+
+**4. Retest, before approval** — clicking "Try Similar Action Again": the Evidence Graph already cites the case from step 3 alongside the original seed precedent, proving the outcome was written back to FalkorDB. Verdict reached, awaiting human sign-off.
+
+![Retest without approval](docs/screenshot-retest-without-approval.png)
+
+**5. Retest, approved** — same case after clicking Approve: a second real RocketRide execution, and the outcome is saved as yet another precedent for the next run to cite. *This is the proof that memory changes motion — each approval makes the next trial smarter.*
+
+![Retest with approval](docs/screenshot-retest-with-approval.png)
 
 ## Repo layout
 

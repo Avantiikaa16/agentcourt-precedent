@@ -1,5 +1,7 @@
 # AgentCourt Precedent
 
+![AgentCourt Precedent dashboard](docs/screenshot.png)
+
 Every risky AI action goes on trial, and every verdict becomes precedent.
 
 Built solo by **Avantika Chapegadikar** for "Memory Meets Motion" (2026-08-03). Mandated stack: **FalkorDB** (precedent graph) · **RocketRide** (trial orchestration + execution) · **Guild.ai** (courtroom agents) · **LaserData** (event stream). Snyk and Linkup (optional evidence sponsors) were not wired and are omitted from the UI entirely rather than shown as empty placeholders.
@@ -34,7 +36,7 @@ Open `localhost:3000`, click **Run Golden Demo**. This is a live-integration dem
 
 **LaserData**: `@laserdata/laser-sdk`'s TLS socket never set `servername` (SNI), so LaserData Cloud's SNI-routed load balancer silently reset the connection before the handshake completed — appeared as an indefinite hang. Diagnosed by comparing a plain `tls.connect()` (worked, got a real cert) against the SDK's internal socket creation (failed) down to the exact missing option. Patched locally in `node_modules` (`client.connection.js`), made durable via `patch-package` (`backend/patches/`, auto-applied on `npm install` through the `postinstall` hook — see `backend/package.json`). `rejectUnauthorized: false` is also set since the deployment presents a self-signed per-deployment cert; acceptable for a same-day hackathon credential.
 
-## Golden demo (memorize this, it's the whole pitch)
+## Golden demo
 
 1. CleanupAgent requests: `DELETE 850 inactive production customer records`. LaserData captures it.
 2. FalkorDB finds a precedent: a past hard-delete broke billing history.
@@ -83,7 +85,6 @@ frontend/
 - [x] **Guild.ai** — 3 agents published and invoked for real per trial.
 - [x] **RocketRide** — pipeline deployed and invoked for real, running persistently, fully automated.
 - [x] **LaserData** — publishing and reading real events, SDK bug patched and durable.
-- [ ] **Snyk / Linkup** (optional, not mandated) — not wired, omitted from the UI rather than faked.
 
 ## Judging checklist (from the doc)
 
@@ -92,4 +93,3 @@ frontend/
 - [x] FalkorDB query + precedent path visible on screen (Evidence Graph panel).
 - [x] Guild session identifiers — visible via `guild session list` / app.guild.ai.
 - [x] LaserData event IDs visible on screen (sponsor bar + `/api/cases/:caseId/events`).
-- [ ] Linkup source URLs / Snyk finding — not applicable, not wired, omitted from the UI rather than faked.

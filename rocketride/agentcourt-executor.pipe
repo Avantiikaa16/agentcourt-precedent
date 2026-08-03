@@ -1,0 +1,87 @@
+{
+  "project_id": "7215adae-8072-4d18-8afc-16dfa6cb1fd7",
+  "components": [
+    {
+      "id": "webhook_1",
+      "provider": "webhook",
+      "config": {
+        "hideForm": true,
+        "mode": "Source",
+        "parameters": {},
+        "type": "webhook"
+      },
+      "ui": {
+        "position": {
+          "x": 12,
+          "y": 80
+        },
+        "measured": {
+          "width": 150,
+          "height": 213
+        },
+        "nodeType": "default",
+        "formDataValid": true
+      }
+    },
+    {
+      "id": "llm_gemini_1",
+      "provider": "llm_gemini",
+      "name": "Gemini",
+      "config": {
+        "profile": "gemini-3_1-pro-preview",
+        "1-pro-preview": {},
+        "name": "Gemini"
+      },
+      "ui": {
+        "position": {
+          "x": -210,
+          "y": -70
+        },
+        "measured": {
+          "width": 150,
+          "height": 58
+        },
+        "nodeType": "default",
+        "formDataValid": false
+      }
+    },
+    {
+      "id": "llm_gemini_2",
+      "provider": "llm_gemini",
+      "name": "Gemini",
+      "config": {
+        "profile": "gemini-3_1-pro-preview",
+        "1-pro-preview": {
+          "apikey": "<REDACTED - set your own RocketRide Gemini API key here, do not commit real keys>"
+        },
+        "name": "Gemini"
+      },
+      "ui": {
+        "position": {
+          "x": 270,
+          "y": 110
+        },
+        "measured": {
+          "width": 150,
+          "height": 58
+        },
+        "nodeType": "default",
+        "formDataValid": true
+      },
+      "input": [
+        {
+          "lane": "questions",
+          "from": "webhook_1"
+        }
+      ]
+    }
+  ],
+  "version": 1,
+  "docRevision": 15,
+  "isLocked": false,
+  "snapToGrid": true,
+  "snapGridSize": [
+    10,
+    10
+  ]
+}

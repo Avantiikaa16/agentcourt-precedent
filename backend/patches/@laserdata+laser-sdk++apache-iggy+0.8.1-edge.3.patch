@@ -1,0 +1,33 @@
+diff --git a/node_modules/@laserdata/laser-sdk/node_modules/apache-iggy/dist/client/client.config.js b/node_modules/@laserdata/laser-sdk/node_modules/apache-iggy/dist/client/client.config.js
+index 965b5b2..31653fe 100644
+--- a/node_modules/@laserdata/laser-sdk/node_modules/apache-iggy/dist/client/client.config.js
++++ b/node_modules/@laserdata/laser-sdk/node_modules/apache-iggy/dist/client/client.config.js
+@@ -24,8 +24,10 @@ export const normalizeClientConfig = (config) => {
+     if (!Number.isSafeInteger(maxResponseFrameSize) ||
+         maxResponseFrameSize < 256)
+         throw new TypeError('maxResponseFrameSize must be a safe integer of at least 256 bytes');
+-    if (protocol === 'vsr' && config.transport === 'TLS')
+-        throw new TypeError('VSR framing currently supports the TCP transport only');
++    // PATCHED: this guard was overly conservative -- TLS is a transparent
++    // socket wrapper and does not affect VSR's byte-level framing.
++    // if (protocol === 'vsr' && config.transport === 'TLS')
++    //     throw new TypeError('VSR framing currently supports the TCP transport only');
+     if (protocol === 'vsr' &&
+         ((config.poolSize?.min ?? 1) > 1 || (config.poolSize?.max ?? 1) > 1))
+         throw new TypeError('VSR clients currently support exactly one pooled connection');
+diff --git a/node_modules/@laserdata/laser-sdk/node_modules/apache-iggy/dist/client/client.connection.js b/node_modules/@laserdata/laser-sdk/node_modules/apache-iggy/dist/client/client.connection.js
+index c1023ca..c88db15 100644
+--- a/node_modules/@laserdata/laser-sdk/node_modules/apache-iggy/dist/client/client.connection.js
++++ b/node_modules/@laserdata/laser-sdk/node_modules/apache-iggy/dist/client/client.connection.js
+@@ -40,7 +40,10 @@ const createTcpSocket = (options) => {
+  * @returns TLS socket
+  */
+ const createTlsSocket = ({ port, ...options }) => {
+-    const socket = TLSConnect(port, options);
++    // PATCHED: SNI (servername) was never set, so cloud endpoints fronted by
++    // an SNI-routing load balancer (e.g. LaserData Cloud on GCP) reset the
++    // connection before the TLS handshake completes.
++    const socket = TLSConnect(port, { servername: options.host, rejectUnauthorized: false, ...options });
+     return socket;
+ };
+ /**

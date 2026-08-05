@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { runGoldenDemo, approveCase, denyCase } from "@/lib/api";
-import type { CaseRecord } from "@/lib/types";
+import type { ActionRequest, CaseRecord } from "@/lib/types";
 import { DocketPanel } from "@/components/DocketPanel";
 import { CourtroomPanel } from "@/components/CourtroomPanel";
 import { EvidenceGraphPanel } from "@/components/EvidenceGraphPanel";
@@ -10,6 +10,7 @@ import { FuturesPanel } from "@/components/FuturesPanel";
 import { VerdictExecutionPanel } from "@/components/VerdictExecutionPanel";
 import { SponsorBar } from "@/components/SponsorBar";
 import { TrialProgress } from "@/components/TrialProgress";
+import { CustomActionForm } from "@/components/CustomActionForm";
 
 export default function Home() {
   const [cases, setCases] = useState<CaseRecord[]>([]);
@@ -21,12 +22,12 @@ export default function Home() {
   const selected = cases.find((c) => c.caseId === selectedCaseId);
   const hasExecutedCase = cases.some((c) => c.status === "executed");
 
-  async function handleRunDemo() {
+  async function handleRunDemo(action?: ActionRequest) {
     setBusy(true);
     setTrialRunning(true);
     setError(null);
     try {
-      const record = await runGoldenDemo();
+      const record = await runGoldenDemo(action);
       setCases((prev) => [record, ...prev]);
       setSelectedCaseId(record.caseId);
     } catch (e) {
@@ -92,7 +93,7 @@ export default function Home() {
             Reset Demo
           </button>
           <button
-            onClick={handleRunDemo}
+            onClick={() => handleRunDemo()}
             disabled={busy}
             className="rounded-full bg-gradient-to-r from-amber-600 to-amber-500 text-white px-5 py-2.5 text-sm font-semibold shadow-sm hover:shadow-md hover:from-amber-500 hover:to-amber-400 active:scale-[0.98] transition-all disabled:opacity-50 disabled:pointer-events-none"
           >
@@ -102,6 +103,8 @@ export default function Home() {
       </header>
 
       <SponsorBar caseRecord={selected} />
+
+      <CustomActionForm onSubmit={handleRunDemo} busy={busy} />
 
       <TrialProgress active={trialRunning} />
 

@@ -52,3 +52,33 @@ export const goldenDemoWorld: WorldState = {
   dependentServices: ["billing", "support", "analytics"],
   backupAvailable: false,
 };
+
+// For a custom action outside the golden demo's database-delete shape,
+// there's no real WorldState to simulate against -- describe the three
+// outcomes qualitatively from the action itself instead of inventing
+// specific numbers that wouldn't be true for an arbitrary tool.
+export function simulateGenericFutures(action: { tool: string; reason: string }): FutureOutcome[] {
+  return [
+    {
+      option: "approve",
+      expectedResult: `"${action.tool}" executes exactly as requested: ${action.reason}. No safety net if it's wrong.`,
+      rowsRemoved: 0,
+      reversible: false,
+      brokenServices: [],
+    },
+    {
+      option: "deny",
+      expectedResult: "Action blocked; the underlying problem it was meant to solve remains unresolved.",
+      rowsRemoved: 0,
+      reversible: true,
+      brokenServices: [],
+    },
+    {
+      option: "modify",
+      expectedResult: `A safer variant of "${action.tool}" runs with backup + dry-run safeguards first, fully reversible.`,
+      rowsRemoved: 0,
+      reversible: true,
+      brokenServices: [],
+    },
+  ];
+}

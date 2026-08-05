@@ -1,12 +1,12 @@
-import type { CaseRecord } from "./types";
+import type { ActionRequest, CaseRecord } from "./types";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:3001";
 
-export async function runGoldenDemo(): Promise<CaseRecord> {
+export async function runGoldenDemo(action?: ActionRequest): Promise<CaseRecord> {
   const res = await fetch(`${API_URL}/api/dev/run-golden-demo`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({}),
+    body: JSON.stringify(action ? { action } : {}),
   });
   if (!res.ok) throw new Error(`run-golden-demo failed: ${res.status}`);
   return res.json();

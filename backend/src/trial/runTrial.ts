@@ -1,7 +1,7 @@
 import { randomUUID } from "node:crypto";
 import type { ActionRequest, CourtEvent, Verdict } from "../events/types";
 import { getPrecedentsForTool } from "../graph/precedents";
-import { simulateFutures, goldenDemoWorld, type WorldState } from "../simulator/counterfactual";
+import { simulateFutures, simulateGenericFutures, goldenDemoWorld, type WorldState } from "../simulator/counterfactual";
 import { decide } from "../bailiff/bailiff";
 import { saveCase, type CaseRecord, type CourtroomOutput, type PrecedentRef } from "../store/caseStore";
 import { invokeGuildAgent } from "../agents/guildClient";
@@ -58,7 +58,10 @@ export async function runTrial(action: ActionRequest, world: WorldState = golden
   }
 
   const precedents = await getPrecedentsForTool(action.tool);
-  const futures = simulateFutures(world);
+  // Numeric world-state simulation only makes sense for the golden demo's
+  // database-delete shape; any other custom tool gets a qualitative
+  // simulation derived from the action itself instead of fake row counts.
+  const futures = action.tool.startsWith("database.") ? simulateFutures(world) : simulateGenericFutures(action);
   const courtroom = await runCourtroomTrial(action, precedents, futures);
   const bailiff = decide(action, courtroom.judge);
 

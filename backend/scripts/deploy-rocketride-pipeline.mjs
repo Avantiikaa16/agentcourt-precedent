@@ -21,7 +21,15 @@ try {
   // unconnected and incomplete (formDataValid: false), not part of the real graph.
   pipeFile.components = pipeFile.components.filter((c) => c.id !== "llm_gemini_1");
 
-  const existingToken = await client.getTaskToken({ projectId: pipeFile.project_id, source: "webhook_1" });
+  // getTaskToken throws (rather than returning null) when nothing is
+  // currently running -- that's the expected state after RocketRide's infra
+  // reaps an idle task, not a real failure, so it shouldn't abort the deploy.
+  let existingToken;
+  try {
+    existingToken = await client.getTaskToken({ projectId: pipeFile.project_id, source: "webhook_1" });
+  } catch (e) {
+    console.log("No existing task running (expected if it was reaped):", e.message);
+  }
   if (existingToken) {
     await client.terminate(existingToken);
     console.log("Terminated stale task:", existingToken);

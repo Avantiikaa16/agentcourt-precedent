@@ -4,6 +4,8 @@
 
 Every risky AI action goes on trial, and every verdict becomes precedent.
 
+**[Live demo →](https://agentcourt-precedent.vercel.app)** · Backend on Render's free tier spins down after inactivity, so the first request after idle time can take ~50s to wake up — not a bug, just click through and wait once.
+
 Built solo by **Avantika Chapegadikar** for "Memory Meets Motion" (2026-08-03). Mandated stack: **FalkorDB** (precedent graph) · **RocketRide** (trial orchestration + execution) · **Guild.ai** (courtroom agents) · **LaserData** (event stream). Snyk and Linkup (optional evidence sponsors) were not wired and are omitted from the UI entirely rather than shown as empty placeholders.
 
 ## Quickstart (fresh clone)
@@ -30,11 +32,22 @@ Open `localhost:3000`, click **Run Golden Demo**. This is a live-integration dem
 
 **Every sponsor status shown is honest, never faked**: the dashboard's sponsor bar and courtroom badges show REAL / SIMULATED / UNAVAILABLE per integration, computed from what actually happened on that request (e.g. if RocketRide's webhook fails, the receipt is visibly labeled SIMULATED, never presented identically to a real execution).
 
-## Two real bugs found and fixed in vendor SDKs
+## Real bugs found and fixed in vendor SDKs
 
-**RocketRide**: the play-button test session in Pipeline Builder has a default TTL and expires after inactivity. Fixed via `npm run rocketride:deploy` (in `backend/`) — reads the real saved pipeline from RocketRide's account store (`.projects/agentcourt-executor.pipe`) and restarts it with `ttl: 0` (no timeout) via SDK calls (`getTaskToken` / `terminate` / `use`). Same webhook token every time. Rerun that command if the webhook ever starts 400ing again.
+**RocketRide (session expiry)**: the play-button test session in Pipeline Builder has a default TTL and expires after inactivity. Fixed via `npm run rocketride:deploy` (in `backend/`) — reads the real saved pipeline from RocketRide's account store (`.projects/agentcourt-executor.pipe`) and restarts it with `ttl: 0` (no timeout) via SDK calls (`getTaskToken` / `terminate` / `use`). Same webhook token every time. Rerun that command if the webhook ever starts 400ing again.
+
+**RocketRide (`getTaskToken` throws instead of returning null)**: the redeploy script above called `getTaskToken` expecting `null` back when no task was running, but the SDK actually throws `"Your pipeline is not running"` instead — a normal state after RocketRide's infra reaps an idle task, not a real failure. Fixed by catching that specific case instead of letting it abort the whole redeploy.
 
 **LaserData**: `@laserdata/laser-sdk`'s TLS socket never set `servername` (SNI), so LaserData Cloud's SNI-routed load balancer silently reset the connection before the handshake completed — appeared as an indefinite hang. Diagnosed by comparing a plain `tls.connect()` (worked, got a real cert) against the SDK's internal socket creation (failed) down to the exact missing option. Patched locally in `node_modules` (`client.connection.js`), made durable via `patch-package` (`backend/patches/`, auto-applied on `npm install` through the `postinstall` hook — see `backend/package.json`). `rejectUnauthorized: false` is also set since the deployment presents a self-signed per-deployment cert; acceptable for a same-day hackathon credential.
+
+**Guild.ai (no non-interactive auth)**: the `guild` CLI's normal auth is OS-keychain-backed, with no documented way to authenticate a hosted container. Its source revealed an undocumented `GUILD_STATE_DIR` override that reads `auth-state.json` instead — the sanctioned "for scripting" path (`guild auth token` exists for exactly this). `backend/scripts/write-guild-auth.mjs` materializes that file from a Render env var at boot, so the real token only ever lives in Render's encrypted store, never in git.
+
+## Deployment
+
+Backend on [Render](https://render.com) (`render.yaml` at repo root — import as a Blueprint), frontend on [Vercel](https://vercel.com) (root directory `frontend`, env var `NEXT_PUBLIC_API_URL` pointing at the Render URL). Two things that don't work out of the box and are already fixed in this repo:
+
+- `tsc`'s `bundler` module resolution emits extensionless relative imports that native Node ESM can't resolve at runtime — the production build (`npm run build` in `backend/`) uses esbuild to bundle instead, keeping `tsc --noEmit` for type-checking only.
+- `npm install -g` fails on Render's build user (no write access to the system npm prefix) — the `guild` CLI is installed as a regular local dependency instead; npm puts `node_modules/.bin` on `PATH` for `npm run` scripts automatically, so it resolves the same way.
 
 ## Golden demo
 

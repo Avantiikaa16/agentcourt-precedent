@@ -85,6 +85,14 @@ Backend on [Render](https://render.com) (`render.yaml` at repo root — import a
 
 ![Retest with approval](docs/screenshot-retest-with-approval.png)
 
+**7. Custom action** — a totally novel action typed into "Put your own action on trial" (`auth.disable-mfa-org-wide`, not a database tool at all). No fabricated precedent shown since none exists for this tool yet, and the Bailiff correctly falls through to the Judge's own risk score (90/100 → Human Review) instead of the two hardcoded database-specific rules.
+
+![Custom action](docs/screenshot-custom-action.png)
+
+**8. Custom action, denied** — same case after clicking Deny: blocked with no execution receipt and nothing written back to FalkorDB, since a denied action isn't a "lesson learned" the way an approved one is.
+
+![Custom action denied](docs/screenshot-custom-action-denied.png)
+
 ## Repo layout
 
 ```

@@ -43,16 +43,6 @@ Open `localhost:3000`, click **Run Golden Demo**. This is a live-integration dem
 
 **Every sponsor status shown is honest, never faked**: the dashboard's sponsor bar and courtroom badges show REAL / SIMULATED / UNAVAILABLE per integration, computed from what actually happened on that request (e.g. if RocketRide's webhook fails, the receipt is visibly labeled SIMULATED, never presented identically to a real execution).
 
-## Real bugs found and fixed in vendor SDKs
-
-**RocketRide (session expiry)**: the play-button test session in Pipeline Builder has a default TTL and expires after inactivity. Fixed via `npm run rocketride:deploy` (in `backend/`) - reads the real saved pipeline from RocketRide's account store (`.projects/agentcourt-executor.pipe`) and restarts it with `ttl: 0` (no timeout) via SDK calls (`getTaskToken` / `terminate` / `use`). Same webhook token every time. Rerun that command if the webhook ever starts 400ing again.
-
-**RocketRide (`getTaskToken` throws instead of returning null)**: the redeploy script above called `getTaskToken` expecting `null` back when no task was running, but the SDK actually throws `"Your pipeline is not running"` instead — a normal state after RocketRide's infra reaps an idle task, not a real failure. Fixed by catching that specific case instead of letting it abort the whole redeploy.
-
-**LaserData**: `@laserdata/laser-sdk`'s TLS socket never set `servername` (SNI), so LaserData Cloud's SNI-routed load balancer silently reset the connection before the handshake completed — appeared as an indefinite hang. Diagnosed by comparing a plain `tls.connect()` (worked, got a real cert) against the SDK's internal socket creation (failed) down to the exact missing option. Patched locally in `node_modules` (`client.connection.js`), made durable via `patch-package` (`backend/patches/`, auto-applied on `npm install` through the `postinstall` hook - see `backend/package.json`). `rejectUnauthorized: false` is also set since the deployment presents a self-signed per-deployment cert; acceptable for a same-day hackathon credential.
-
-**Guild.ai (no non-interactive auth)**: the `guild` CLI's normal auth is OS-keychain-backed, with no documented way to authenticate a hosted container. Its source revealed an undocumented `GUILD_STATE_DIR` override that reads `auth-state.json` instead - the sanctioned "for scripting" path (`guild auth token` exists for exactly this). `backend/scripts/write-guild-auth.mjs` materializes that file from a Render env var at boot, so the real token only ever lives in Render's encrypted store, never in git.
-
 ## Deployment
 
 Backend on [Render](https://render.com) (`render.yaml` at repo root - import as a Blueprint), frontend on [Vercel](https://vercel.com) (root directory `frontend`, env var `NEXT_PUBLIC_API_URL` pointing at the Render URL). Two things that don't work out of the box and are already fixed in this repo:

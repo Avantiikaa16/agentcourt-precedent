@@ -69,15 +69,19 @@ Backend on [Render](https://render.com) (`render.yaml` at repo root — import a
 
 ![Running](docs/screenshot-running.png)
 
-**3. First demo, approved** — the golden demo's first run. Judge lands on MODIFY citing the seed precedent, Bailiff requires backup/dry-run/human approval, and after clicking Approve, RocketRide executes for real — full receipt with case ID, action hash, and RocketRide run ID.
+**3. First demo, before approval** — the golden demo's first run. Judge lands on MODIFY citing the seed precedent, Bailiff requires backup/dry-run/human approval, awaiting the human sign-off.
+
+![First demo without approval](docs/screenshot-first-demo-without-approval.png)
+
+**4. First demo, approved** — after clicking Approve, RocketRide executes for real — full receipt with case ID, action hash, and RocketRide run ID.
 
 ![First demo with approval](docs/screenshot-first-demo-with-approval.png)
 
-**4. Retest, before approval** — clicking "Try Similar Action Again": the Evidence Graph already cites the case from step 3 alongside the original seed precedent, proving the outcome was written back to FalkorDB. Verdict reached, awaiting human sign-off.
+**5. Retest, before approval** — clicking "Try Similar Action Again": the Evidence Graph already cites the case from step 3 alongside the original seed precedent, proving the outcome was written back to FalkorDB. Verdict reached, awaiting human sign-off.
 
 ![Retest without approval](docs/screenshot-retest-without-approval.png)
 
-**5. Retest, approved** — same case after clicking Approve: a second real RocketRide execution, and the outcome is saved as yet another precedent for the next run to cite. *This is the proof that memory changes motion — each approval makes the next trial smarter.*
+**6. Retest, approved** — same case after clicking Approve: a second real RocketRide execution, and the outcome is saved as yet another precedent for the next run to cite. *This is the proof that memory changes motion — each approval makes the next trial smarter.*
 
 ![Retest with approval](docs/screenshot-retest-with-approval.png)
 

@@ -1,0 +1,42 @@
+services:
+  - type: web
+    name: agentcourt-backend
+    runtime: node
+    plan: free
+    rootDir: backend
+    buildCommand: npm install && npm install -g @guildai/cli@0.17.0 && npm run build
+    startCommand: npm run start:render
+    envVars:
+      - key: HOST
+        value: 0.0.0.0
+      - key: FALKORDB_URL
+        sync: false
+      - key: ROCKETRIDE_API_KEY
+        sync: false
+      - key: ROCKETRIDE_WEBHOOK_URL
+        sync: false
+      - key: ROCKETRIDE_WEBHOOK_KEY
+        sync: false
+      - key: GUILD_API_KEY
+        sync: false
+      - key: GUILD_WORKSPACE_ID
+        sync: false
+      - key: GUILD_STATE_DIR
+        value: /opt/render/project/.guild-state
+      # Output of `guild auth token` run locally. Materialized into a real
+      # auth-state.json at boot by scripts/write-guild-auth.mjs -- see
+      # README's Deployment section for why this is necessary.
+      - key: GUILD_AUTH_TOKEN
+        sync: false
+      - key: LASERDATA_HOST
+        sync: false
+      - key: LASERDATA_USERNAME
+        sync: false
+      - key: LASERDATA_PASSWORD
+        sync: false
+      - key: LASERDATA_PORT_HTTP
+        value: "443"
+      - key: LASERDATA_PORT_TCP
+        value: "8090"
+      - key: LASERDATA_STREAM
+        value: agent-court

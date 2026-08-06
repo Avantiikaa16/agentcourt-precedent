@@ -8,7 +8,8 @@ app.register(cors, { origin: true });
 
 registerRoutes(app).then(() => {
   const port = Number(process.env.PORT ?? 3001);
-  app.listen({ port }, (err) => {
+  const host = process.env.HOST ?? "127.0.0.1";
+  app.listen({ port, host }, (err) => {
     if (err) {
       app.log.error(err);
       process.exit(1);

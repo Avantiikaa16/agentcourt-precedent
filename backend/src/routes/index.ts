@@ -8,6 +8,7 @@ import { getCase, listCases, saveCase } from "../store/caseStore";
 import { executeViaRocketRide } from "../executor/rocketrideClient";
 import { recordOutcomeAsPrecedent } from "../graph/recordOutcome";
 import { readEventsForCase } from "../events/laserdataClient";
+import { runCypher } from "../graph/client";
 import type { ActionRequest, Verdict } from "../events/types";
 
 const goldenDemoAction: ActionRequest = {
@@ -20,6 +21,20 @@ const goldenDemoAction: ActionRequest = {
 };
 
 export async function registerRoutes(app: FastifyInstance) {
+  // Cheap FalkorDB keep-alive ping -- a trivial query, not a full trial run,
+  // so a scheduled uptime check doesn't create junk cases or spend RocketRide
+  // credits. FalkorDB Cloud's free tier auto-stops instances after enough
+  // inactivity; this keeps it (and Render, since the request itself hits it) warm.
+  app.get("/api/health", async (_req, reply) => {
+    try {
+      await runCypher("agentcourt", "RETURN 1");
+      return reply.send({ status: "ok", falkordb: "reachable" });
+    } catch (err) {
+      app.log.error({ err }, "health check: FalkorDB unreachable");
+      return reply.status(503).send({ status: "degraded", falkordb: "unreachable" });
+    }
+  });
+
   app.post<{ Body: ActionRequest }>("/api/actions/propose", async (req, reply) => {
     const result = proposeAction(req.body);
     return reply.send(result);

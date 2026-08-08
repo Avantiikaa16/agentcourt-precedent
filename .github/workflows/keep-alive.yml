@@ -1,0 +1,21 @@
+name: Keep-alive ping
+
+on:
+  schedule:
+    # Daily at 13:00 UTC -- well within any plausible free-tier inactivity
+    # window for Render (backend) and FalkorDB Cloud (graph DB), which both
+    # auto-stop/spin-down idle resources.
+    - cron: "0 13 * * *"
+  workflow_dispatch: {}
+
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Ping backend health endpoint
+        run: |
+          curl -sf --max-time 120 https://agentcourt-backend.onrender.com/api/health || {
+            echo "Health check failed or backend was cold-starting -- retrying once";
+            sleep 30;
+            curl -sf --max-time 120 https://agentcourt-backend.onrender.com/api/health;
+          }
